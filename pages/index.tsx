@@ -15,26 +15,10 @@ const ProfilePage = ({userData}: InferGetServerSidePropsType<typeof getServerSid
 
 export default ProfilePage;
 
-//export const getServerSideProps = async () => {
-//	try{
-//		const res = await fetch("http://localhost:3000/api/user",{
-//			method:"GET"
-//		})
-//		const userData = await res.json()
-//	return { props:{
-//		userData:userData.data.length > 0 ? userData.data[0] : {}
-//	} }
-//	}
-//	catch {
-//		return { props: {
-//			userData:{}
-//		}  }
-//	}
-//  }
-
   export const getServerSideProps = (async (context) => {
 	try{
-		const res = await fetch("http://localhost:3000/api/user",{
+		const domain = context.req.headers.host
+		const res = await fetch(`http://${domain}/api/user` ,{
 			method:"GET"
 		})
 		const userData = await res.json()
