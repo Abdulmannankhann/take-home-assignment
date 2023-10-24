@@ -12,3 +12,12 @@ const ProfilePage: NextPage = () => {
 };
 
 export default ProfilePage;
+
+export async function getServerSideProps(){
+	//I can't use getServerSideProps because my data is in localStorage
+	return {
+		props:{
+
+		}
+	}
+}

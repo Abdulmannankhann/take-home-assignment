@@ -1,15 +1,31 @@
 import { trpc } from '@/lib/trpc';
-import { FC } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import { Label } from '@radix-ui/react-label';
+import { FC, useEffect, useState } from 'react';
 
 export const Profile: FC = () => {
 	const query = trpc.profile.getProfile.useQuery(); // TODO: fix the error
+	const [userData,setUserData]= useState({
+		username:"",
+		bio:"",
+		profileUrl:""
+	})
 
-	return (
+	useEffect(() => {
+		const data = JSON.parse(localStorage.getItem('userData'))
+		setUserData(data)
+	  }, [])
+
+	  return (
 		<div className='space-y-8 max-w-md w-full border rounded-md px-8 py-10'>
 			<h2 className='text-xl'>Profile Info</h2>
-			<p>display the avatar here</p>
-			<p>display the bio here</p>
-			<p>display the username here</p>
+			<Avatar>
+              <AvatarImage src={`images/${userData?.profileUrl}`} width={100} className='rounded-full'/>
+              <AvatarFallback><strong>Profile Photo :</strong></AvatarFallback>
+            </Avatar>
+			<Label htmlFor="text"><strong>Username : </strong>{userData?.username}</Label>
+			<br/>
+			<Label htmlFor="text"><strong>Bio : </strong>{userData?.bio}</Label>
 		</div>
 	);
 };
