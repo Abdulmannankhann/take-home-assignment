@@ -13,9 +13,9 @@ export function ProfileForm() {
 	const [selectedImage, setSelectedImage] = useState("");
 	const [selectedFile, setSelectedFile] = useState<File>();
 
-	function checkFileType(file: File) { // file type checking
+	function checkFileType(file: any) { // file type checking
 		if (file?.name) {
-			const fileType = file.name.split(".").pop();
+			const fileType : any = file.name.split(".").pop();
 			if (["gif", "png", "jpg"].includes(fileType)) return true; 
 		}
 		return false;
@@ -25,14 +25,15 @@ export function ProfileForm() {
 	const formSchema = z.object({
 		username:z.string().nonempty("Username is mandatory"),
 		bio:z.string().nonempty("Bio is mandatory"),
-		profileUrl: z.any().refine((file: File) => file?.length !== 0, "File is required")
+		profileUrl: z.any().refine((file: any) => file?.length !== 0, "File is required")
 		.refine((file) => checkFileType(selectedFile), "Only .jpg, .gif, .png formats are supported.")
 	})
 	const form = useForm({
 		resolver:zodResolver(formSchema),
 		defaultValues: {
 			username: "",
-			bio:""
+			bio:"",
+			profileUrl:""
 		  },
 	});
 

@@ -12,7 +12,8 @@ export const Profile: FC = () => {
 	})
 
 	useEffect(() => {
-		const data = JSON.parse(localStorage.getItem('userData'))
+		const localData:any = localStorage.getItem('userData') || {};
+		const data = JSON.parse(localData)
 		setUserData(data)
 	  }, [])
 
