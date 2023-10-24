@@ -4,7 +4,6 @@ import { procedure, router } from '@/server/trpc';
 const profileRouter = router({
 	updateProfile: procedure.input(UPDATE_PROFILE_TRPC_SCHEMA).mutation(() => {
 		// TODO: save profile data to a db of your choosing
-		localStorage.setItem('saveData',"data")
 	}),
 	getProfile: procedure.query(async () => {
 		// TODO: get profile data from db

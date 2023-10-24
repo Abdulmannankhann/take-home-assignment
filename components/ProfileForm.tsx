@@ -11,22 +11,24 @@ import axios from "axios";
 export function ProfileForm() {
 	const [uploading, setUploading] = useState(false);
 	const [selectedImage, setSelectedImage] = useState("");
+	const [imagePreview, setImagePreview] = useState("");
 	const [selectedFile, setSelectedFile] = useState<File>();
 
-	function checkFileType(file: any) { // file type checking
-		if (file?.name) {
-			const fileType : any = file.name.split(".").pop();
-			if (["gif", "png", "jpg"].includes(fileType)) return true; 
-		}
-		return false;
-	}
+	//function checkFileType(file: any) { // file type checking
+	//	if (file?.name) {
+	//		const fileType : any = file.name.split(".").pop();
+	//		if (["gif", "png", "jpg"].includes(fileType)) return true; 
+	//	}
+	//	return false;
+	//}
 
 	// TODO: ensure the form is typesafe
 	const formSchema = z.object({
 		username:z.string().nonempty("Username is mandatory"),
 		bio:z.string().nonempty("Bio is mandatory"),
-		profileUrl: z.any().refine((file: any) => file?.length !== 0, "File is required")
-		.refine((file) => checkFileType(selectedFile), "Only .jpg, .gif, .png formats are supported.")
+		profileUrl: z.any()
+		//.refine((file: any) => file?.length !== 0, "File is required")
+		//.refine((file) => checkFileType(selectedFile), "Only .jpg, .gif, .png formats are supported.")
 	})
 	const form = useForm({
 		resolver:zodResolver(formSchema),
@@ -38,20 +40,47 @@ export function ProfileForm() {
 	});
 
 	const updateProfile = form.handleSubmit(async (values) => {
-		console.log(values)
-		if(values.username && values.bio && selectedImage){
-			localStorage.setItem("userData",JSON.stringify({
-			username:values?.username,
-			bio:values?.bio,
-			profileUrl:selectedImage
-		}))
-		window.location.reload()
-		}
 		// TODO: submit the values here
 		// 1. upload the photo to the /api/upload route
 		// 2. after storing the image return a url to it and store that into
 		// the profile data
+		let existingUsers:any = []
+		axios.get("/api/user")
+		.then((res)=>{
+			existingUsers = res?.data.data;
+			updateUser(existingUsers,values)
+		}).catch((err)=>{
+		})
 	});
+
+	const updateUser = (existingUsers:any[],values:any) => {
+		if(existingUsers?.length == 0){
+			if(values.username && values.bio && selectedImage){
+		axios.post("/api/user",{
+			username:values?.username,
+			bio:values?.bio,
+			profileUrl:selectedImage
+		}).then((res)=>{
+			window.location.reload();
+		}).catch((err)=>{
+		})
+		}
+	} else {
+		if(values.username && values.bio && selectedImage){
+	axios.patch("/api/user",{
+		username:values?.username,
+		bio:values?.bio,
+		profileUrl:selectedImage,
+		_id:existingUsers[0]._id
+	}).then((res)=>{
+		window.location.reload()
+	}).catch((err)=>{
+		//console.log(err)
+	})
+	}
+
+	}
+	}
 
 	const handleUpload = async () => {
 		setUploading(true);
@@ -65,13 +94,13 @@ export function ProfileForm() {
 			setSelectedImage(url)
 		  }
 		} catch (error: any) {
-		  console.log(error.response?.data);
 		}
 		setUploading(false);
 	  };
 
 	  useEffect(()=>{
 		handleUpload()
+	  // eslint-disable-next-line react-hooks/exhaustive-deps
 	  },[selectedFile])
 
 	return (

@@ -3,19 +3,17 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Label } from '@radix-ui/react-label';
 import { FC, useEffect, useState } from 'react';
 
-export const Profile: FC = () => {
-	const query = trpc.profile.getProfile.useQuery(); // TODO: fix the error
-	const [userData,setUserData]= useState({
-		username:"",
-		bio:"",
-		profileUrl:""
-	})
+interface ProfileProps {
+    userData: any,
+}
 
-	useEffect(() => {
-		const localData:any = localStorage.getItem('userData') || {};
-		const data = JSON.parse(localData)
-		setUserData(data)
-	  }, [])
+export const Profile: FC<ProfileProps> = ({userData}) => {
+	const query = trpc.profile.getProfile.useQuery(); // TODO: fix the error
+	//const [userData,setUserData]= useState({
+	//	username:"",
+	//	bio:"",
+	//	profileUrl:""
+	//})
 
 	  return (
 		<div className='space-y-8 max-w-md w-full border rounded-md px-8 py-10'>
